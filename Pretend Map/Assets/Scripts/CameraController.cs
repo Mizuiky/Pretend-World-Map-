@@ -52,6 +52,9 @@ public class CameraController : MonoBehaviour
     private bool _isCameraPanning;
     private float _orthographicSize;
 
+    private Ray _ray;
+    private RaycastHit _hit;
+
     #endregion
 
     private void OnValidate()
@@ -82,7 +85,10 @@ public class CameraController : MonoBehaviour
             _isDragging = true;
 
             //transform mouse position in world point
-            _touchOriginPoint = _camera.ScreenToWorldPoint(Input.mousePosition);         
+            _touchOriginPoint = _camera.ScreenToWorldPoint(Input.mousePosition);
+
+            IsTouchingAnyObject();
+
         }
 
         //isOnBounderiesEdges();
@@ -138,6 +144,11 @@ public class CameraController : MonoBehaviour
             _edges.y = _downYEdge;
 
         _virtualCamera.transform.position = _edges;
+    }
+
+    private void IsTouchingAnyObject()
+    {
+        
     }
 
     #endregion 
