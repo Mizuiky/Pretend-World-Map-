@@ -6,6 +6,7 @@ TagManager:
   tags:
   - ZoomSlider
   - Map
+  - MapItem
   layers:
   - Default
   - TransparentFX
