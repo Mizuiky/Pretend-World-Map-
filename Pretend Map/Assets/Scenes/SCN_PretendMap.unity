@@ -366,6 +366,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afa58df98698a12448c2e48dd28d579c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _camera: {fileID: 455818311}
 --- !u!114 &441867707
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -400,6 +401,7 @@ GameObject:
   m_Component:
   - component: {fileID: 455818310}
   - component: {fileID: 455818309}
+  - component: {fileID: 455818311}
   m_Layer: 0
   m_Name: WorldMapCamera
   m_TagString: Untagged
@@ -461,6 +463,27 @@ Transform:
   m_Father: {fileID: 1585778003}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &455818311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 455818307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1f3332d09ce7df428ba1a2cc1422377, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 168672624}
+  _panSpeed: 0.01
+  _rightXEdge: 0
+  _leftXEdge: 0
+  _upYEdge: 0
+  _downYEdge: 0
+  _maxZoomOut: 10
+  _maxZoomIn: 4
+  _zoomIncrement: 1
 --- !u!1 &465741475
 GameObject:
   m_ObjectHideFlags: 0
