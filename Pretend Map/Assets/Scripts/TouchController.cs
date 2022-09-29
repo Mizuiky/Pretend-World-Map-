@@ -3,14 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using DigitalRubyShared;
 using System.Linq;
+using System;
 
 public class TouchController : MonoBehaviour
 {
+    [SerializeField]
+    private CameraFunctions _camera;
+
+    public delegate void OnPanning(PanState state, Vector3 originalPosition, Vector3 endPosition);
+    public static event OnPanning onPanning;
+
     #region Gestures
 
     private TapGestureRecognizer _tapGesture;
     private TapGestureRecognizer _doubleTapGesture;
-    private GestureRecognizer _panGesture;
+    private PanGestureRecognizer _panGesture;
     private ScaleGestureRecognizer _zoomGesture;
 
     #endregion
@@ -18,6 +25,9 @@ public class TouchController : MonoBehaviour
     private List<GestureTouch> _touches;
     private Vector3 _touchPoint;
     private Vector3 _touchPosition;
+
+    private Vector3 _panTouchBegan;
+    private Vector3 _panTouchMoved;
 
     private RaycastHit2D _hit;
     private Ray _ray;
@@ -92,7 +102,7 @@ public class TouchController : MonoBehaviour
             GestureTouch touch = GetFirstTouch(gesture);
 
             // Raycast to detect game objects on scene
-            CheckTargetItem(new Vector2(touch.X, touch.Y));
+            SelectTouchedItem(new Vector2(touch.X, touch.Y));
             DrawTouchPoint(touch.X, touch.Y);
 
             Debug.Log("DOUBLE TAP GESTURE");
@@ -101,12 +111,44 @@ public class TouchController : MonoBehaviour
 
     #endregion
 
+    #region  Pan
+
     private void CreatePanGesture()
+    {
+        _panGesture = new PanGestureRecognizer();
+        _panGesture.MinimumNumberOfTouchesToTrack = _panGesture.MaximumNumberOfTouchesToTrack = 1;
+        _panGesture.StateUpdated += PanGestureCallBack;
+        FingersScript.Instance.AddGesture(_panGesture);
+    }
+
+    private void PanGestureCallBack(GestureRecognizer gesture)
+    {
+        GestureTouch touch = GetFirstTouch(gesture);
+
+        if(gesture.State == GestureRecognizerState.Began)
+        {
+            _panTouchBegan = new Vector2(touch.X, touch.Y);
+        }
+        else if(gesture.State == GestureRecognizerState.Executing)
+        {
+            _panTouchMoved = new Vector2(touch.X, touch.Y);
+
+            onPanning?.Invoke(PanState.ENABLED, _panTouchBegan, _panTouchMoved);
+        }
+        else if(gesture.State == GestureRecognizerState.Ended)
+        {
+            onPanning?.Invoke(PanState.DISABLED, _panTouchBegan, _panTouchMoved);
+        }
+    }
+
+    #endregion
+
+    private void CreateZoomGesture()
     {
 
     }
 
-    private void CreateZoomGesture()
+    private void ZoomGestureCallBack(GestureRecognizer gesture)
     {
 
     }
@@ -118,7 +160,7 @@ public class TouchController : MonoBehaviour
         return touches.FirstOrDefault();
     }
 
-    private void CheckTargetItem(Vector3 item)
+    private void SelectTouchedItem(Vector3 item)
     {
         _itemPosition = new Vector2(item.x, item.y);
 
