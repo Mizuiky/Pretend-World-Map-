@@ -539,12 +539,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _camera: {fileID: 168672624}
+  _defaultOrthographicSize: 7
   _isUsingMouseInput: 1
   _panSpeed: 0.05
-  _defaultOrthographicSize: 7
   _maxZoomOut: 10
   _maxZoomIn: 4
-  _zoomSpeed: 0
+  _zoomSpeed: 1
+  _zoomIncrement: 1
 --- !u!114 &733176043
 MonoBehaviour:
   m_ObjectHideFlags: 0
