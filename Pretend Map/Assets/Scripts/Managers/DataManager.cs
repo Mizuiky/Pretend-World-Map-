@@ -1,8 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Map;
 using System.IO;
+using Map;
 
 public static class DataManager
 {
@@ -13,7 +12,7 @@ public static class DataManager
     //To find the %AppData% use windown + R key to open execute and search for the following path: C:..\AppData\LocalLow\DefaultCompany\PretendMap\MapSaveData
     public static string directory = Application.persistentDataPath + "/MapSaveData/";
 
-    public static string mapFileName = "WorldMapData.txt";
+    public static string mapFileName = "WorldMapData.json";
 
     #endregion
 
@@ -23,27 +22,39 @@ public static class DataManager
 
         string fullPath = directory + mapFileName;
 
+        Debug.Log("Directory path " + fullPath);
+
         List<MapItemData> mapItems = new List<MapItemData>();
         List<MapImageData> mapImages = new List<MapImageData>();
 
-        MapData data = new MapData(mapItems, mapImages);
+        MapData mapData = new MapData(mapItems, mapImages);
 
-        if (File.Exists(fullPath))
+        if(mapData != null)
         {
-            string json = File.ReadAllText(fullPath);
-            data = JsonUtility.FromJson<MapData>(json);
+            Debug.Log("Data != null");
 
-            Debug.Log("Loaded data from WorldMapData.txt");
+            if (File.Exists(fullPath))
+            {
+                Debug.Log("Full path exists " + fullPath);
 
-            return data;
+                string json = File.ReadAllText(fullPath);
+                mapData = JsonUtility.FromJson<MapData>(json);
+
+                if(mapData != null)
+                {
+                    Debug.Log("Loaded data from WorldMapData.json");
+                    return mapData;
+                }            
+            }
+
+            Debug.Log("Couldn't find WorldMapDataFile.json");
         }
 
-        Debug.Log("Couldn't find WorldMapDataFile.txt");
-
+        Debug.Log("Data NULL");
         return null;
     }
 
-    public static void SaveData()
+    public static void SaveMapData()
     {
 
     }
