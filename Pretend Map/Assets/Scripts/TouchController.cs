@@ -10,15 +10,16 @@ public class TouchController : MonoBehaviour
     [SerializeField]
     private CameraFunctions _camera;
 
-    public delegate void OnPanning(PanState state, Vector3 originalPosition, Vector3 endPosition);
-    public static event OnPanning onPanning;
+    public static event Action<PanState, Vector3, Vector3> onPanning;
+    public static event Action<float> onZooming;
+    public static event Action onFinishZooming;
 
     #region Gestures
 
     private TapGestureRecognizer _tapGesture;
     private TapGestureRecognizer _doubleTapGesture;
     private PanGestureRecognizer _panGesture;
-    private ScaleGestureRecognizer _zoomGesture;
+    private ScaleGestureRecognizer _pinchZoomGesture;
 
     #endregion
 
@@ -54,14 +55,11 @@ public class TouchController : MonoBehaviour
     {
         CreateTapGesture();
         CreateDoubleTapGesture();
-        CreatePanGesture();
-        CreateZoomGesture();
+        //CreatePanGesture();
+        CreatePinchZoomGesture();
 
         //single tap gesture requires that the double tap gesture fail
         _tapGesture.RequireGestureRecognizerToFail = _doubleTapGesture;
-
-        //cant do at the same time pan and scale gestures;
-        //_panGesture.DisallowSimultaneousExecution(_zoomGesture);
     }
 
     #region Tap Gesture
@@ -76,7 +74,7 @@ public class TouchController : MonoBehaviour
     {
         if (gesture.State == GestureRecognizerState.Ended)
         {
-            GestureTouch touch = GetFirstTouch(gesture);
+            GestureTouch touch = GetTouches(gesture).FirstOrDefault();
             DrawTouchPoint(touch.X, touch.Y);
 
             Debug.Log("ONE TAP GESTURE");
@@ -99,7 +97,7 @@ public class TouchController : MonoBehaviour
     {
         if(gesture.State == GestureRecognizerState.Ended)
         {
-            GestureTouch touch = GetFirstTouch(gesture);
+            GestureTouch touch = GetTouches(gesture).LastOrDefault();
 
             // Raycast to detect game objects on scene
             SelectTouchedItem(new Vector2(touch.X, touch.Y));
@@ -111,73 +109,93 @@ public class TouchController : MonoBehaviour
 
     #endregion
 
-    #region  Pan
+    #region  Pan Gesture
 
-    private void CreatePanGesture()
+    //private void CreatePanGesture()
+    //{
+    //    _panGesture = new PanGestureRecognizer();
+    //    _panGesture.MinimumNumberOfTouchesToTrack = _panGesture.MaximumNumberOfTouchesToTrack = 1;
+    //    _panGesture.StateUpdated += PanGestureCallBack;
+    //    FingersScript.Instance.AddGesture(_panGesture);
+    //}
+
+    //private void PanGestureCallBack(GestureRecognizer gesture)
+    //{
+    //    Debug.Log("Pan Gesture");
+    //    GestureTouch touch = GetFirstTouch(gesture);
+
+    //    if(gesture.State == GestureRecognizerState.Began)
+    //    {
+    //        _panTouchBegan = new Vector2(touch.X, touch.Y);
+    //    }
+    //    else if(gesture.State == GestureRecognizerState.Executing)
+    //    {
+    //        _panTouchMoved = new Vector2(touch.X, touch.Y);
+
+    //        onPanning?.Invoke(PanState.ENABLED, _panTouchBegan, _panTouchMoved);
+    //    }
+    //    else if(gesture.State == GestureRecognizerState.Ended)
+    //    {
+    //        onPanning?.Invoke(PanState.DISABLED, _panTouchBegan, _panTouchMoved);
+    //    }
+    //}
+
+    #endregion
+
+    #region Zoom Gesture
+
+    private void CreatePinchZoomGesture()
     {
-        _panGesture = new PanGestureRecognizer();
-        _panGesture.MinimumNumberOfTouchesToTrack = _panGesture.MaximumNumberOfTouchesToTrack = 1;
-        _panGesture.StateUpdated += PanGestureCallBack;
-        FingersScript.Instance.AddGesture(_panGesture);
+        _pinchZoomGesture = new ScaleGestureRecognizer();
+        _pinchZoomGesture.MaximumNumberOfTouchesToTrack = _pinchZoomGesture.MinimumNumberOfTouchesToTrack = 2;
+        _pinchZoomGesture.StateUpdated += PinchZoomGestureCallBack;
+        FingersScript.Instance.AddGesture(_pinchZoomGesture);
     }
 
-    private void PanGestureCallBack(GestureRecognizer gesture)
-    {
-        GestureTouch touch = GetFirstTouch(gesture);
-
-        if(gesture.State == GestureRecognizerState.Began)
+    private void PinchZoomGestureCallBack(GestureRecognizer gesture)
+    {      
+        if (gesture.State == GestureRecognizerState.Executing)
         {
-            _panTouchBegan = new Vector2(touch.X, touch.Y);
-        }
-        else if(gesture.State == GestureRecognizerState.Executing)
-        {
-            _panTouchMoved = new Vector2(touch.X, touch.Y);
-
-            onPanning?.Invoke(PanState.ENABLED, _panTouchBegan, _panTouchMoved);
+            Debug.Log("Scale mutiplier ");
+            onZooming?.Invoke(_pinchZoomGesture.ScaleMultiplier);
         }
         else if(gesture.State == GestureRecognizerState.Ended)
-        {
-            onPanning?.Invoke(PanState.DISABLED, _panTouchBegan, _panTouchMoved);
-        }
+            onFinishZooming.Invoke();
     }
 
     #endregion
 
-    private void CreateZoomGesture()
-    {
-
-    }
-
-    private void ZoomGestureCallBack(GestureRecognizer gesture)
-    {
-
-    }
-
-    private GestureTouch GetFirstTouch(GestureRecognizer gesture)
+    private List<GestureTouch> GetTouches(GestureRecognizer gesture)
     {
         var currentTouches = gesture.CurrentTrackedTouches;
         var touches = currentTouches.ToList();
-        return touches.FirstOrDefault();
+        return touches;
     }
 
     private void SelectTouchedItem(Vector3 item)
     {
+        Debug.Log("Select Item");
+
         _itemPosition = new Vector2(item.x, item.y);
 
         _ray = Camera.main.ScreenPointToRay(_itemPosition);
-        _hit = Physics2D.Raycast(_ray.origin, Vector3.forward);
+        _hit = Physics2D.GetRayIntersection(_ray);
 
         if (_hit.collider != null)
         {
+            Debug.Log("Hit != null");
             var mapItem = _hit.transform.GetComponent<IMapComponent>();
 
             if (mapItem != null)
+            {
+                Debug.Log("map != null");
                 mapItem.OnDestroyComponent();
+            }              
         }
     }
 
     private void DrawTouchPoint(float x, float y)
     {
-        _touchPosition = new Vector3(x, y, 0);
+        _touchPosition = new Vector3(x, y, Camera.main.transform.position.z);
     }
 }
