@@ -1,18 +1,21 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Map
 {
-    [Serializable]
+    [System.Serializable]
     public class MapData
     {
-        public List<MapItemData> mapItems;
-        public List<MapImageData> mapImages;
+        [SerializeField]
+        public List<MapItemData> SpriteNodes;
+        [SerializeField]
+        public List<MapImageData> ImageDatas;
 
         public MapData(List<MapItemData> items, List<MapImageData> images)
         {
-            mapItems = new List<MapItemData>(items);
-            mapImages = new List<MapImageData>(images);
+            SpriteNodes = new List<MapItemData>(items);
+            ImageDatas = new List<MapImageData>(images);
         }
     }
 }

@@ -5,20 +5,13 @@ using UnityEngine;
 
 namespace Map
 {
-    [Serializable]
+    [System.Serializable]
     public class MapItemData
     {
-        public int id;
-        public float posX;
-        public float porY;
-        public int imageId;
-    }
-
-    [Serializable]
-    public class MapImageData
-    {
-        public int imageId;
-        public string name;
+        public int Id;
+        public int PosX;
+        public int PosY;
+        public int ImageID;
     }
 }
 
