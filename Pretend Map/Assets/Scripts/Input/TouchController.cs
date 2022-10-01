@@ -8,7 +8,7 @@ using System;
 public class TouchController : MonoBehaviour
 {
     [SerializeField]
-    private CameraFunctions _camera;
+    private CameraController _camera;
 
     public static event Action<PanState, Vector3, Vector3> onPanning;
     public static event Action<float> onZooming;
@@ -184,7 +184,7 @@ public class TouchController : MonoBehaviour
         if (_hit.collider != null)
         {
             Debug.Log("Hit != null");
-            var mapItem = _hit.transform.GetComponent<IMapComponent>();
+            var mapItem = _hit.transform.GetComponent<IMapItem>();
 
             if (mapItem != null)
             {
