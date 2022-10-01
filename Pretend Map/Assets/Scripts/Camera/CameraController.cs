@@ -17,7 +17,7 @@ public enum ZoomType
     OUT
 }
 
-public class CameraFunctions : MonoBehaviour
+public class CameraController : MonoBehaviour
 {
     #region Serializable Fields
 
@@ -147,7 +147,6 @@ public class CameraFunctions : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("mouse input");
             _isDragging = true;
 
             //transform mouse position in world point
