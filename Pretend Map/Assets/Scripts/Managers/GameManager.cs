@@ -1,14 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Core;
 
-public class GameManager : MonoBehaviour
+public class GameManager : Singleton<GameManager>
 {
-    private MapManager _mapManager;
+    [SerializeField]
+    private MapController _mapController;
 
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKeyDown(KeyCode.M))
             LoadMapData();
     }
 
@@ -18,9 +20,6 @@ public class GameManager : MonoBehaviour
         var map = DataManager.LoadMapData();
 
         if (map != null)
-        {
-            Debug.Log("Map Loaded and != null");
-            //_mapManager.SetMapData(map);
-        }           
+            _mapController.SetMapItems(map);       
     }
 }

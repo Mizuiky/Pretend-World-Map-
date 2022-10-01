@@ -18,10 +18,7 @@ public static class DataManager
 
     public static MapData LoadMapData()
     {
-        Debug.Log("load World Map Data");
-
         string fullPath = directory + mapFileName;
-
         Debug.Log("Directory path " + fullPath);
 
         List<MapItemData> mapItems = new List<MapItemData>();
@@ -31,31 +28,17 @@ public static class DataManager
 
         if(mapData != null)
         {
-            Debug.Log("Data != null");
-
             if (File.Exists(fullPath))
             {
-                Debug.Log("Full path exists " + fullPath);
-
                 string json = File.ReadAllText(fullPath);
                 mapData = JsonUtility.FromJson<MapData>(json);
 
                 if(mapData != null)
-                {
-                    Debug.Log("Loaded data from WorldMapData.json");
-                    return mapData;
-                }            
-            }
-
-            Debug.Log("Couldn't find WorldMapDataFile.json");
+                    return mapData;          
+            }  
         }
-
-        Debug.Log("Data NULL");
         return null;
     }
 
-    public static void SaveMapData()
-    {
-
-    }
+    public static void SaveMapData() { }
 }
