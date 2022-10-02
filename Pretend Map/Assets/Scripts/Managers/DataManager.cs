@@ -21,10 +21,10 @@ public static class DataManager
         string fullPath = directory + mapFileName;
         Debug.Log("Directory path " + fullPath);
 
-        List<MapItemData> mapItems = new List<MapItemData>();
-        List<MapImageData> mapImages = new List<MapImageData>();
+        List<ItemData> itemDataList = new List<ItemData>();
+        List<ItemImage> itemImageList = new List<ItemImage>();
 
-        MapData mapData = new MapData(mapItems, mapImages);
+        MapData mapData = new MapData(itemDataList, itemImageList);
 
         if(mapData != null)
         {

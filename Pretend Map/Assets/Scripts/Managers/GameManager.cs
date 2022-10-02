@@ -16,10 +16,10 @@ public class GameManager : Singleton<GameManager>
 
     private void LoadMapData()
     {
-        Debug.Log("Game Manager is Calling DataManager to load Map Data");
+        //Game Manager is Calling DataManager to load Map Data
         var map = DataManager.LoadMapData();
 
         if (map != null)
-            _mapController.SetMapItems(map);       
+            _mapController.SetItems(map);       
     }
 }

@@ -56,7 +56,7 @@ public class TouchController : MonoBehaviour
         CreateTapGesture();
         CreateDoubleTapGesture();
         //CreatePanGesture();
-        CreatePinchZoomGesture();
+        //CreatePinchZoomGesture();
 
         //single tap gesture requires that the double tap gesture fail
         _tapGesture.RequireGestureRecognizerToFail = _doubleTapGesture;
@@ -111,34 +111,34 @@ public class TouchController : MonoBehaviour
 
     #region  Pan Gesture
 
-    //private void CreatePanGesture()
-    //{
-    //    _panGesture = new PanGestureRecognizer();
-    //    _panGesture.MinimumNumberOfTouchesToTrack = _panGesture.MaximumNumberOfTouchesToTrack = 1;
-    //    _panGesture.StateUpdated += PanGestureCallBack;
-    //    FingersScript.Instance.AddGesture(_panGesture);
-    //}
+    private void CreatePanGesture()
+    {
+        _panGesture = new PanGestureRecognizer();
+        _panGesture.MinimumNumberOfTouchesToTrack = _panGesture.MaximumNumberOfTouchesToTrack = 1;
+        _panGesture.StateUpdated += PanGestureCallBack;
+        FingersScript.Instance.AddGesture(_panGesture);
+    }
 
-    //private void PanGestureCallBack(GestureRecognizer gesture)
-    //{
-    //    Debug.Log("Pan Gesture");
-    //    GestureTouch touch = GetFirstTouch(gesture);
+    private void PanGestureCallBack(GestureRecognizer gesture)
+    {
+        Debug.Log("Pan Gesture");
+        GestureTouch touch = GetTouches(gesture).First();
 
-    //    if(gesture.State == GestureRecognizerState.Began)
-    //    {
-    //        _panTouchBegan = new Vector2(touch.X, touch.Y);
-    //    }
-    //    else if(gesture.State == GestureRecognizerState.Executing)
-    //    {
-    //        _panTouchMoved = new Vector2(touch.X, touch.Y);
+        if (gesture.State == GestureRecognizerState.Began)
+        {
+            _panTouchBegan = new Vector2(touch.X, touch.Y);
+        }
+        else if (gesture.State == GestureRecognizerState.Executing)
+        {
+            _panTouchMoved = new Vector2(touch.X, touch.Y);
 
-    //        onPanning?.Invoke(PanState.ENABLED, _panTouchBegan, _panTouchMoved);
-    //    }
-    //    else if(gesture.State == GestureRecognizerState.Ended)
-    //    {
-    //        onPanning?.Invoke(PanState.DISABLED, _panTouchBegan, _panTouchMoved);
-    //    }
-    //}
+            onPanning?.Invoke(PanState.ENABLED, _panTouchBegan, _panTouchMoved);
+        }
+        else if (gesture.State == GestureRecognizerState.Ended)
+        {
+            onPanning?.Invoke(PanState.DISABLED, _panTouchBegan, _panTouchMoved);
+        }
+    }
 
     #endregion
 

@@ -182,8 +182,6 @@ public class CameraController : MonoBehaviour
 
     private void Pan()
     {
-        Debug.Log("PAN");
-
         _isPanning = true;
 
         //the last mouse position minus the current mouse input when "dragging" will give the direction of the movement done
