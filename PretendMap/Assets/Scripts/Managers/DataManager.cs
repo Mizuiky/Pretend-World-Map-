@@ -19,7 +19,7 @@ public static class DataManager
     public static MapData LoadMapData()
     {
         string fullPath = directory + mapFileName;
-        Debug.Log("Directory path " + fullPath);
+        //Debug.Log("Directory path " + fullPath);
 
         List<ItemData> itemDataList = new List<ItemData>();
         List<ItemImage> itemImageList = new List<ItemImage>();

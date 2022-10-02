@@ -30,7 +30,7 @@ public class MapItemBase : MonoBehaviour, IMapItem
 
     #endregion
 
-    public void Init(ItemData itemData, Sprite sprite)
+    public void Init(ItemData itemData, Sprite sprite, int layer)
     {
         _itemData = itemData;
         _sprite = sprite;
@@ -38,6 +38,7 @@ public class MapItemBase : MonoBehaviour, IMapItem
         SetSprite();
         SetPosition();
         SetScale();
+        SetLayer(layer);
     }
 
     private void SetSprite()
