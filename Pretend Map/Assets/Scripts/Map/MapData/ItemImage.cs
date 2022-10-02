@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [System.Serializable]
-public class MapImageData
+public class ItemImage
 {
     public int ImageID;
     public string Name;

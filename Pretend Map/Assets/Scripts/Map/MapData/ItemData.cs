@@ -6,11 +6,11 @@ using UnityEngine;
 namespace Map
 {
     [System.Serializable]
-    public class MapItemData
+    public class ItemData
     {
         public int Id;
-        public int PosX;
-        public int PosY;
+        public float PosX;
+        public float PosY;
         public int ImageID;
     }
 }

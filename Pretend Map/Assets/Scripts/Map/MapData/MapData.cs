@@ -8,14 +8,14 @@ namespace Map
     public class MapData
     {
         [SerializeField]
-        public List<MapItemData> SpriteNodes;
+        public List<ItemData> SpriteNodes;
         [SerializeField]
-        public List<MapImageData> ImageDatas;
+        public List<ItemImage> ImageDatas;
 
-        public MapData(List<MapItemData> items, List<MapImageData> images)
+        public MapData(List<ItemData> items, List<ItemImage> images)
         {
-            SpriteNodes = new List<MapItemData>(items);
-            ImageDatas = new List<MapImageData>(images);
+            SpriteNodes = new List<ItemData>(items);
+            ImageDatas = new List<ItemImage>(images);
         }
     }
 }

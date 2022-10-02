@@ -5,8 +5,7 @@ using Map;
 
 public interface IMapItem
 {
-    public MapItemData MapItem { get; }
-    public MapImageData MapImage { get; }
+    public ItemData ItemData { get; }
 
     public SpriteRenderer ItemSprite { get; }
 
