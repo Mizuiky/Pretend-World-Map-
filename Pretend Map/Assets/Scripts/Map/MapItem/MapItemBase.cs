@@ -10,7 +10,7 @@ public class MapItemBase : MonoBehaviour, IMapItem
     protected Vector3 _itemPosition;
 
     private Sprite _sprite;
-    private Vector3 _itemScale = new Vector3(0.2f, 0.2f, 0);
+    private Vector3 _itemScale = new Vector3(1f, 1f, 0);
 
     #region Properties
 

@@ -51,6 +51,9 @@ public class MapController : MonoBehaviour
     {
         foreach(ItemImage data in imageData)
         {
+            var nameWithoutExtension = RemoveExtensionFileFromName(data.Name);
+            data.Name = nameWithoutExtension;
+
             var newimage = GetSprite(data.Name);
 
             if(newimage != null)
@@ -88,9 +91,16 @@ public class MapController : MonoBehaviour
         Debug.Log("Sprites are Loaded");
     }
 
-    private Sprite GetSprite(string spriteFileName)
+    private Sprite GetSprite(string spriteName)
     {
-        return _mapSprites.Find(x => x.name.Equals(spriteFileName, StringComparison.OrdinalIgnoreCase));
+        var sprite = _mapSprites.Find(x => x.name.Equals(spriteName, StringComparison.OrdinalIgnoreCase));
+        return sprite != null ? sprite : null;
+    }
+
+    private string RemoveExtensionFileFromName(string name)
+    {
+        string[] subs = name.Split('.');
+        return subs[0];
     }
 }
 
