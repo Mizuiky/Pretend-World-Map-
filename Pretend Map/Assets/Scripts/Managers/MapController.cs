@@ -7,11 +7,19 @@ using System;
 
 public class MapController : MonoBehaviour
 {
-    private List<MapItemBase> _mapItemList;
+    [Header("Spawn Settings")]
+
+    [SerializeField]
+    private Spawner _spawner;
+
+    [SerializeField]
+    private GameObject _itemPrefab;
+
+    private List<MapItem> _mapItemList;
+    private List<Sprite> _mapSprites;
+    private MapItem _mapItemData;
 
     private Dictionary<int, Sprite> _mapImages;
-
-    private List<Sprite> _mapSprites;
 
     private void Start()
     {
@@ -20,32 +28,58 @@ public class MapController : MonoBehaviour
 
     private void Init()
     {
-        _mapItemList = new List<MapItemBase>();
+        _mapItemList = new List<MapItem>();
         _mapImages = new Dictionary<int, Sprite>();
     }
 
-    public void SetMapItems(MapData mapData)
+    public void SetItems(MapData mapData)
     {
         LoadSpriteResorces();
-        InitializeMapImagesDictionary(mapData.ImageDatas);
+        ItemInitialization(mapData);
+
+        if(_mapItemList.Count > 0)
+            _spawner.SpawnItems(_mapItemList, _itemPrefab);
     }
-    public void InitializeMapImagesDictionary(List<MapImageData> imageData)
+
+    public void ItemInitialization(MapData mapData)
     {
-        foreach(MapImageData data in imageData)
+        InitializeImageDictionary(mapData.ImageDatas);
+        InitializeItemList(mapData.SpriteNodes);
+    }
+
+    public void InitializeImageDictionary(List<ItemImage> imageData)
+    {
+        foreach(ItemImage data in imageData)
         {
-            var newimage = GetMapSprite(data.Name);
+            var newimage = GetSprite(data.Name);
 
             if(newimage != null)
                 _mapImages.Add(data.ImageID, newimage);
-
-            Debug.LogFormat("ImageID: {0}  SpriteName: {1} ", data.ImageID, newimage.name);
         }
     }
 
-    public void InitializeMapItemList(MapData mapData)
+    private void InitializeItemList(List<ItemData> mapData)
     {
-        var mapList = mapData;
+        foreach(ItemData data in mapData)
+        {
+            var item = CreateItem(data);
+            
+            if(item != null)
+                _mapItemList.Add(item);
+        }
+    }
 
+    private MapItem CreateItem(ItemData data)
+    {
+        var itemSprite = _mapImages[data.ImageID];
+
+        if(itemSprite != null)
+        {
+            _mapItemData = new MapItem(data, itemSprite);
+            return _mapItemData;
+        }
+    
+        return null;
     }
 
     public void LoadSpriteResorces()
@@ -54,7 +88,7 @@ public class MapController : MonoBehaviour
         Debug.Log("Sprites are Loaded");
     }
 
-    private Sprite GetMapSprite(string spriteFileName)
+    private Sprite GetSprite(string spriteFileName)
     {
         return _mapSprites.Find(x => x.name.Equals(spriteFileName, StringComparison.OrdinalIgnoreCase));
     }
