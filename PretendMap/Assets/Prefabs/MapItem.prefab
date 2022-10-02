@@ -94,7 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5157912747038999264}
   - component: {fileID: 5157912747038999265}
-  - component: {fileID: 6966045803580225992}
+  - component: {fileID: 5933701874036507460}
   m_Layer: 0
   m_Name: MapItem
   m_TagString: Untagged
@@ -130,8 +130,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3d83f6596c86d340a2b9955b9da5de1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!61 &6966045803580225992
-BoxCollider2D:
+--- !u!60 &5933701874036507460
+PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -153,6 +153,10 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1}
-  m_EdgeRadius: 0
+  m_Points:
+    m_Paths:
+    - - {x: 0, y: 1}
+      - {x: -0.95105654, y: 0.30901697}
+      - {x: -0.5877852, y: -0.80901706}
+      - {x: 0.58778536, y: -0.80901694}
+      - {x: 0.9510565, y: 0.30901712}

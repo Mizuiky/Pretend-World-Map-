@@ -9,5 +9,7 @@ public interface IMapItem
 
     public SpriteRenderer ItemSprite { get; }
 
+    public PolygonCollider2D Collider2D { get; }
+
     void OnDestroyComponent();
 }
