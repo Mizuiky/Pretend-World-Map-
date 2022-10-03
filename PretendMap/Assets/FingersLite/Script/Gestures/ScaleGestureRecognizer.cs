@@ -7,9 +7,10 @@
 // 
 
 using System;
+using UnityEngine;
 
 namespace DigitalRubyShared
-{
+{ 
     /// <summary>
     /// A scale gesture detects two fingers moving towards or away from each other to scale something
     /// </summary>
@@ -34,21 +35,15 @@ namespace DigitalRubyShared
         private float previousDistanceX;
         private float previousDistanceY;
 
+        private ZoomType zoomtype;
+
         private readonly System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
 
         public ScaleGestureRecognizer()
         {
             ScaleMultiplier = ScaleMultiplierX = ScaleMultiplierY = 1.0f;
-
-#if UNITY_2017_4_OR_NEWER
-
-            ZoomSpeed = (UnityEngine.Input.mousePresent ? 3.0f : 1.0f);
-
-#else
-
+            
             ZoomSpeed = 1.0f;
-
-#endif
 
             ThresholdUnits = 0.15f;
             MinimumNumberOfTouchesToTrack = MaximumNumberOfTouchesToTrack = 2;
@@ -138,7 +133,7 @@ namespace DigitalRubyShared
                         jitterThreshold = Math.Max(jitterThreshold, hysteresisScaleResolutionSquared);
                     }
 
-                    // check if we are above the jitter threshold - will always be true if moving in the same direction as last time
+                    // check if we are above the jitter threshold - will always be true if moving in the same direction as last time (Pinch in)
                     bool aboveJitterThreshold = ((previousDistanceSquared > jitterThreshold * currentDistanceSquared) ||
                         (currentDistanceSquared > jitterThreshold * previousDistanceSquared));
 
@@ -148,9 +143,13 @@ namespace DigitalRubyShared
                         timer.Reset();
                         timer.Start();
                         float newDistanceDirection = (currentDistanceSquared - previousDistanceSquared >= 0.0f ? 1.0f : -1.0f);
+
                         if (previousDistanceDirection == 0 || newDistanceDirection == previousDistanceDirection)
                         {
+                            SetZoomType(newDistanceDirection);
+
                             ScaleMultiplier = GetScale(distance / previousDistance);
+
                             ScaleMultiplierX = GetScale(distanceX / previousDistanceX);
                             ScaleMultiplierY = GetScale(distanceY / previousDistanceY);
                             SetState(GestureRecognizerState.Executing);
@@ -159,6 +158,7 @@ namespace DigitalRubyShared
                         {
                             ScaleMultiplier = ScaleMultiplierX = ScaleMultiplierY = 1.0f;
                         }
+
                         previousDistanceDirection = newDistanceDirection;
                         SetPreviousDistance(distance, distanceX, distanceY);
                     }
@@ -179,6 +179,14 @@ namespace DigitalRubyShared
             {
                 SetState(GestureRecognizerState.Possible);
             }
+        }
+
+        private void SetZoomType(float zoomScale)
+        {
+            if (zoomScale >= 0)
+                ZoomType = ZoomType.IN;
+            else
+                ZoomType = ZoomType.OUT;
         }
 
         protected override void TouchesBegan(System.Collections.Generic.IEnumerable<GestureTouch> touches)
@@ -204,6 +212,13 @@ namespace DigitalRubyShared
                 SetState(GestureRecognizerState.Failed);
             }
         }
+
+        /// <summary>
+        /// The current zoom type
+        /// </summary>
+        /// <value>zoom type IN equals 1 and OUT -1.</value>
+        /// 
+        public ZoomType ZoomType { get; private set; }
 
         /// <summary>
         /// The current scale multiplier. Multiply your current scale value by this to scale.

@@ -93,7 +93,7 @@ public class MapController : MonoBehaviour
     public void LoadSpriteResorces()
     {
         _mapSprites = Resources.LoadAll("Props", typeof(Sprite)).Cast<Sprite>().ToList();
-        Debug.Log("Sprites are Loaded");
+        //Debug.Log("Sprites are Loaded");
     }
 
     private Sprite GetSprite(string spriteName)
