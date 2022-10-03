@@ -10,7 +10,7 @@ public class TouchController : MonoBehaviour
     [SerializeField]
     private CameraController _camera;
 
-    public static event Action<PanState, Vector3, Vector3> onPanning;
+    public static event Action<bool, Vector3, Vector3> onPanning;
     public static event Action<float> onZooming;
     public static event Action onFinishZooming;
 
@@ -23,7 +23,6 @@ public class TouchController : MonoBehaviour
 
     #endregion
 
-    private List<GestureTouch> _touches;
     private Vector3 _touchPoint;
     private Vector3 _touchPosition;
 
@@ -55,7 +54,7 @@ public class TouchController : MonoBehaviour
     {
         CreateTapGesture();
         CreateDoubleTapGesture();
-        //CreatePanGesture();
+        CreatePanGesture();
         //CreatePinchZoomGesture();
 
         //single tap gesture requires that the double tap gesture fail
@@ -121,7 +120,8 @@ public class TouchController : MonoBehaviour
 
     private void PanGestureCallBack(GestureRecognizer gesture)
     {
-        Debug.Log("Pan Gesture");
+        Debug.Log("PAN GESTURE");
+
         GestureTouch touch = GetTouches(gesture).First();
 
         if (gesture.State == GestureRecognizerState.Began)
@@ -131,12 +131,11 @@ public class TouchController : MonoBehaviour
         else if (gesture.State == GestureRecognizerState.Executing)
         {
             _panTouchMoved = new Vector2(touch.X, touch.Y);
-
-            onPanning?.Invoke(PanState.ENABLED, _panTouchBegan, _panTouchMoved);
+            onPanning?.Invoke(true, _panTouchBegan, _panTouchMoved);
         }
         else if (gesture.State == GestureRecognizerState.Ended)
         {
-            onPanning?.Invoke(PanState.DISABLED, _panTouchBegan, _panTouchMoved);
+            onPanning?.Invoke(false, _panTouchBegan, _panTouchMoved);
         }
     }
 

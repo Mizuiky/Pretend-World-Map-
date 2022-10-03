@@ -5,12 +5,6 @@ using Cinemachine;
 using UnityEngine.EventSystems;
 using System;
 
-public enum PanState
-{
-    ENABLED,
-    DISABLED
-}
-
 public enum ZoomType
 {
     IN,
@@ -31,6 +25,9 @@ public class CameraController : MonoBehaviour
 
     [SerializeField]
     private bool _isUsingMouseInput;
+
+    [SerializeField]
+    private bool _isUsingFingerGestures;
 
     [Header("Pan")]
     [SerializeField]
@@ -58,13 +55,15 @@ public class CameraController : MonoBehaviour
     private Vector3 _targetDirection;
     private Vector3 _smoothVelocity;
 
-    private PanState _panState;
     private Touch _touch;
 
     private bool _isDragging;
     private bool _isPanning;
 
     private float _orthographicSize;
+
+    private bool _isZooming;
+    private bool _isPaning;
 
     #endregion
 
@@ -82,13 +81,14 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
-        //if (_panState == PanState.ENABLED && !_isZooming)
-        //    Pan();
+        if (_isPaning && !_isZooming)
+            Pan();
 
         //if (_isZoomEnabled)
         //    CameraZoom();
 
-        CameraZoom();
+        //AQUI ESTA COMENTADO PARA FUNCIONAR TEM QUE DESCOMENTAR
+        //CameraZoom();
 
         if (_isUsingMouseInput)
         {
@@ -98,24 +98,28 @@ public class CameraController : MonoBehaviour
         else
         {
             //Input Will only work on phone
-            GetTouchInput();
+            if (!_isUsingFingerGestures)
+                GetTouchInput();
         }
     }
 
     private void Init()
     {
-        //_panState = PanState.DISABLED;
-        //_isZoomEnabled = false;
+        TouchController.onPanning += SetPanState;
+        _isZooming = false;
+        _isPaning = false;
         //TouchController.onZooming += EnableZoom;
         //TouchController.onFinishZooming += DisableZoom;
-        //TouchController.onPanning += SetPanState;
-    }
-    private void SetPanState(PanState state, Vector3 originalPosition, Vector3 currentPosition)
-    {
-        _touchOriginalPosition = _camera.ScreenToWorldPoint(originalPosition);
-        _currentTouchPoint = _camera.ScreenToWorldPoint(currentPosition);
 
-        _panState = state;
+    }
+    private void SetPanState(bool isPaning, Vector3 originalPosition, Vector3 currentPosition)
+    {
+        _isPaning = isPaning;
+        if(_isPaning)
+        {
+            _touchOriginalPosition = _camera.ScreenToWorldPoint(originalPosition);
+            _currentTouchPoint = _camera.ScreenToWorldPoint(currentPosition);
+        }      
     }
 
     #region Touch and Mouse Inputs
@@ -184,15 +188,15 @@ public class CameraController : MonoBehaviour
     {
         _isPanning = true;
 
-        //the last mouse position minus the current mouse input when "dragging" will give the direction of the movement done
+        //the last mouse position minus the current input when "dragging" will give the direction of the movement done
         _targetDirection = _touchOriginalPosition - _currentTouchPoint;
 
         Debug.Log("target direction " + _targetDirection);
         //the new position of the virtual camera will be the current virtual position plus the direction calculated
         var targetPosition = _virtualCamera.transform.position + _targetDirection;
 
-        //smooth damp will smoothly make the movement between the last mouse input to the new virtual camera position;
-        _virtualCamera.transform.position = Vector3.SmoothDamp(_virtualCamera.transform.position, targetPosition, ref _smoothVelocity, _panSpeed); 
+        //Lerp will smoothly make the movement between the last input to the new virtual camera position;
+        _virtualCamera.transform.position = Vector3.Lerp(_virtualCamera.transform.position, targetPosition, _panSpeed * Time.deltaTime);
     }
 
     #endregion

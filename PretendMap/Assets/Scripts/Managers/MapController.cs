@@ -37,8 +37,7 @@ public class MapController : MonoBehaviour
         LoadSpriteResorces();
         ItemInitialization(mapData);
 
-        if(_mapItemList.Count > 0)
-            _spawner.SpawnItems(_mapItemList, _itemPrefab);
+        LoadMap();
     }
 
     public void ItemInitialization(MapData mapData)
@@ -83,6 +82,12 @@ public class MapController : MonoBehaviour
         }
     
         return null;
+    }
+
+    public void LoadMap()
+    {
+        if (_mapItemList.Count > 0)
+            _spawner.SpawnItems(_mapItemList, _itemPrefab);
     }
 
     public void LoadSpriteResorces()
