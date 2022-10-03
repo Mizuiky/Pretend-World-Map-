@@ -11,15 +11,14 @@ public class TouchController : MonoBehaviour
     private CameraController _camera;
 
     public static event Action<bool, Vector3, Vector3> onPanning;
-    public static event Action<float> onZooming;
-    public static event Action onFinishZooming;
+    public static event Action<bool, ZoomType> onZooming;
 
     #region Gestures
 
     private TapGestureRecognizer _tapGesture;
     private TapGestureRecognizer _doubleTapGesture;
     private PanGestureRecognizer _panGesture;
-    private ScaleGestureRecognizer _pinchZoomGesture;
+    private ScaleGestureRecognizer _scaleGesture;
 
     #endregion
 
@@ -39,7 +38,7 @@ public class TouchController : MonoBehaviour
     }
     void Update()
     {
-        // it will draw the current wold touch point using a blue wire sphere on the scene view
+        // It will draw the current wold touch point using a blue wire sphere on the scene view
         _touchPoint = Camera.main.ScreenToWorldPoint(_touchPosition);
     }
 
@@ -55,7 +54,7 @@ public class TouchController : MonoBehaviour
         CreateTapGesture();
         CreateDoubleTapGesture();
         CreatePanGesture();
-        //CreatePinchZoomGesture();
+        CreateScaleGesture();
 
         //single tap gesture requires that the double tap gesture fail
         _tapGesture.RequireGestureRecognizerToFail = _doubleTapGesture;
@@ -120,7 +119,7 @@ public class TouchController : MonoBehaviour
 
     private void PanGestureCallBack(GestureRecognizer gesture)
     {
-        Debug.Log("PAN GESTURE");
+        //Debug.Log("PAN GESTURE");
 
         GestureTouch touch = GetTouches(gesture).First();
 
@@ -143,23 +142,22 @@ public class TouchController : MonoBehaviour
 
     #region Zoom Gesture
 
-    private void CreatePinchZoomGesture()
+    private void CreateScaleGesture()
     {
-        _pinchZoomGesture = new ScaleGestureRecognizer();
-        _pinchZoomGesture.MaximumNumberOfTouchesToTrack = _pinchZoomGesture.MinimumNumberOfTouchesToTrack = 2;
-        _pinchZoomGesture.StateUpdated += PinchZoomGestureCallBack;
-        FingersScript.Instance.AddGesture(_pinchZoomGesture);
+        _scaleGesture = new ScaleGestureRecognizer();
+        _scaleGesture.StateUpdated += ScaleGestureCallBack;
+        FingersScript.Instance.AddGesture(_scaleGesture);
     }
 
-    private void PinchZoomGestureCallBack(GestureRecognizer gesture)
-    {      
+    private void ScaleGestureCallBack(GestureRecognizer gesture)
+    {
+        Debug.Log("SCALE GESTURE");
+
         if (gesture.State == GestureRecognizerState.Executing)
-        {
-            Debug.Log("Scale mutiplier ");
-            onZooming?.Invoke(_pinchZoomGesture.ScaleMultiplier);
-        }
-        else if(gesture.State == GestureRecognizerState.Ended)
-            onFinishZooming.Invoke();
+            onZooming?.Invoke(true, _scaleGesture.ZoomType);
+
+        else if (gesture.State == GestureRecognizerState.Ended)
+            onZooming?.Invoke(true, ZoomType.NONE);
     }
 
     #endregion
@@ -173,8 +171,6 @@ public class TouchController : MonoBehaviour
 
     private void SelectTouchedItem(Vector3 item)
     {
-        Debug.Log("Select Item");
-
         _itemPosition = new Vector2(item.x, item.y);
 
         _ray = Camera.main.ScreenPointToRay(_itemPosition);
@@ -182,14 +178,10 @@ public class TouchController : MonoBehaviour
 
         if (_hit.collider != null)
         {
-            Debug.Log("Hit != null");
             var mapItem = _hit.transform.GetComponent<IMapItem>();
 
             if (mapItem != null)
-            {
-                Debug.Log("map != null");
-                mapItem.OnDestroyComponent();
-            }              
+                mapItem.OnDestroyComponent();            
         }
     }
 

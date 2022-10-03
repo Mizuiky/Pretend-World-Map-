@@ -7,6 +7,7 @@ using System;
 
 public enum ZoomType
 {
+    NONE,
     IN,
     OUT
 }
@@ -39,9 +40,7 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     private float _maxZoomIn;
     [SerializeField]
-    private float _zoomSpeed;
-    [SerializeField]
-    private int _zoomIncrement;
+    private float _zoomIncrement;
 
     #endregion
 
@@ -53,17 +52,14 @@ public class CameraController : MonoBehaviour
     private Vector3 _touchOriginalPosition;
 
     private Vector3 _targetDirection;
-    private Vector3 _smoothVelocity;
 
     private Touch _touch;
 
     private bool _isDragging;
     private bool _isPanning;
+    private bool _isPaning;
 
     private float _orthographicSize;
-
-    private bool _isZooming;
-    private bool _isPaning;
 
     #endregion
 
@@ -81,14 +77,11 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
-        if (_isPaning && !_isZooming)
+        if (_isPaning)
             Pan();
 
-        //if (_isZoomEnabled)
-        //    CameraZoom();
-
-        //AQUI ESTA COMENTADO PARA FUNCIONAR TEM QUE DESCOMENTAR
-        //CameraZoom();
+        //with keys
+        CameraZoom();
 
         if (_isUsingMouseInput)
         {
@@ -105,22 +98,11 @@ public class CameraController : MonoBehaviour
 
     private void Init()
     {
-        TouchController.onPanning += SetPanState;
-        _isZooming = false;
         _isPaning = false;
-        //TouchController.onZooming += EnableZoom;
-        //TouchController.onFinishZooming += DisableZoom;
 
-    }
-    private void SetPanState(bool isPaning, Vector3 originalPosition, Vector3 currentPosition)
-    {
-        _isPaning = isPaning;
-        if(_isPaning)
-        {
-            _touchOriginalPosition = _camera.ScreenToWorldPoint(originalPosition);
-            _currentTouchPoint = _camera.ScreenToWorldPoint(currentPosition);
-        }      
-    }
+        TouchController.onPanning += SetPanState;     
+        TouchController.onZooming += SetZoomState;
+    } 
 
     #region Touch and Mouse Inputs
 
@@ -199,28 +181,50 @@ public class CameraController : MonoBehaviour
         _virtualCamera.transform.position = Vector3.Lerp(_virtualCamera.transform.position, targetPosition, _panSpeed * Time.deltaTime);
     }
 
+    private void SetPanState(bool isPaning, Vector3 originalPosition, Vector3 currentPosition)
+    {
+        _isPaning = isPaning;
+        if (_isPaning)
+        {
+            _touchOriginalPosition = _camera.ScreenToWorldPoint(originalPosition);
+            _currentTouchPoint = _camera.ScreenToWorldPoint(currentPosition);
+        }
+    }
+
     #endregion
 
-    #region Zoom Callback with finger gestures
+    #region Zoom Callback with Finger Gestures
 
-    //private void EnableZoom(float zoomScale)
-    //{
-    //    Debug.Log("enabled Zoom");
-    //    _isZoomEnabled = true;
-    //    _zoomScale = zoomScale;
-    //}
+    private void SetZoomState(bool isZooming, ZoomType type)
+    {
+        OrthographicCameraZoom(type);
+    }
 
-    //private void DisableZoom()
-    //{
-    //    Debug.Log("Disabled Zoom");
-    //    _zoomScale = 0f;
-    //    _isZoomEnabled = false;
-    //}
+    private void OrthographicCameraZoom(ZoomType type)
+    {
+        _orthographicSize = _virtualCamera.m_Lens.OrthographicSize;
+
+        switch(type)
+        {
+            case ZoomType.IN:
+                //Pinch Out
+                _orthographicSize -= _zoomIncrement;
+                break;
+            case ZoomType.OUT:
+                //Pinch In
+                _orthographicSize += _zoomIncrement;
+                break;
+            case ZoomType.NONE:
+                return;              
+        }
+
+        var zoomValue = Math.Clamp(_orthographicSize, _maxZoomIn, _maxZoomOut);
+        _virtualCamera.m_Lens.OrthographicSize = zoomValue;          
+    }
 
     #endregion
 
     #region Zoom With Keys
-
     private void CameraZoom()
     {
         if (Input.GetKeyDown(KeyCode.A))
@@ -228,26 +232,6 @@ public class CameraController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Z))
             OrthographicCameraZoom(ZoomType.OUT);
-    }
-
-    private void OrthographicCameraZoom(ZoomType zoomType)
-    {
-        _orthographicSize = _virtualCamera.m_Lens.OrthographicSize;
-
-        switch (zoomType)
-        {
-            case ZoomType.IN:
-                _orthographicSize -= _zoomIncrement;
-                break;
-            case ZoomType.OUT:
-                _orthographicSize += _zoomIncrement;
-                break;
-        }
-
-        Debug.Log("Camera zooming");
-
-        var zoomValue = Math.Clamp(_orthographicSize, _maxZoomIn, _maxZoomOut);
-        _virtualCamera.m_Lens.OrthographicSize = zoomValue;
     }
 
     #endregion
