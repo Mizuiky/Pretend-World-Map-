@@ -5,7 +5,7 @@ using Cinemachine;
 using UnityEngine.EventSystems;
 using System;
 
-public enum ZoomType
+public enum PinchType
 {
     NONE,
     IN,
@@ -195,26 +195,26 @@ public class CameraController : MonoBehaviour
 
     #region Zoom Callback with Finger Gestures
 
-    private void SetZoomState(bool isZooming, ZoomType type)
+    private void SetZoomState(bool isZooming, PinchType type)
     {
         OrthographicCameraZoom(type);
     }
 
-    private void OrthographicCameraZoom(ZoomType type)
+    private void OrthographicCameraZoom(PinchType type)
     {
         _orthographicSize = _virtualCamera.m_Lens.OrthographicSize;
 
         switch(type)
         {
-            case ZoomType.IN:
-                //Pinch Out
-                _orthographicSize -= _zoomIncrement;
-                break;
-            case ZoomType.OUT:
-                //Pinch In
+            case PinchType.IN:
+                //Zoom Out
                 _orthographicSize += _zoomIncrement;
                 break;
-            case ZoomType.NONE:
+            case PinchType.OUT:
+                //Zoom In
+                _orthographicSize -= _zoomIncrement;
+                break;
+            case PinchType.NONE:
                 return;              
         }
 
@@ -228,10 +228,10 @@ public class CameraController : MonoBehaviour
     private void CameraZoom()
     {
         if (Input.GetKeyDown(KeyCode.A))
-            OrthographicCameraZoom(ZoomType.IN);
+            OrthographicCameraZoom(PinchType.IN);
 
         if (Input.GetKeyDown(KeyCode.Z))
-            OrthographicCameraZoom(ZoomType.OUT);
+            OrthographicCameraZoom(PinchType.OUT);
     }
 
     #endregion

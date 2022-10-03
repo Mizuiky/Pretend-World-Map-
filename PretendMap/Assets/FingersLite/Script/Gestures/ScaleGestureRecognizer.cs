@@ -35,7 +35,7 @@ namespace DigitalRubyShared
         private float previousDistanceX;
         private float previousDistanceY;
 
-        private ZoomType zoomtype;
+        private PinchType zoomtype;
 
         private readonly System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
 
@@ -183,10 +183,10 @@ namespace DigitalRubyShared
 
         private void SetZoomType(float zoomScale)
         {
-            if (zoomScale >= 0)
-                ZoomType = ZoomType.IN;
+            if (zoomScale < 0)
+                ZoomType = PinchType.IN;
             else
-                ZoomType = ZoomType.OUT;
+                ZoomType = PinchType.OUT;
         }
 
         protected override void TouchesBegan(System.Collections.Generic.IEnumerable<GestureTouch> touches)
@@ -218,7 +218,7 @@ namespace DigitalRubyShared
         /// </summary>
         /// <value>zoom type IN equals 1 and OUT -1.</value>
         /// 
-        public ZoomType ZoomType { get; private set; }
+        public PinchType ZoomType { get; private set; }
 
         /// <summary>
         /// The current scale multiplier. Multiply your current scale value by this to scale.

@@ -11,7 +11,7 @@ public class TouchController : MonoBehaviour
     private CameraController _camera;
 
     public static event Action<bool, Vector3, Vector3> onPanning;
-    public static event Action<bool, ZoomType> onZooming;
+    public static event Action<bool, PinchType> onZooming;
 
     #region Gestures
 
@@ -145,6 +145,7 @@ public class TouchController : MonoBehaviour
     private void CreateScaleGesture()
     {
         _scaleGesture = new ScaleGestureRecognizer();
+        _scaleGesture.MaximumNumberOfTouchesToTrack = _scaleGesture.MinimumNumberOfTouchesToTrack = 2;
         _scaleGesture.StateUpdated += ScaleGestureCallBack;
         FingersScript.Instance.AddGesture(_scaleGesture);
     }
@@ -157,7 +158,7 @@ public class TouchController : MonoBehaviour
             onZooming?.Invoke(true, _scaleGesture.ZoomType);
 
         else if (gesture.State == GestureRecognizerState.Ended)
-            onZooming?.Invoke(true, ZoomType.NONE);
+            onZooming?.Invoke(true, PinchType.NONE);
     }
 
     #endregion
